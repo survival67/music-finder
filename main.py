@@ -97,7 +97,6 @@ async def handle_search_request(message: types.Message, state: FSMContext):
         'preferredcodec': 'mp3',
         'preferredquality': '192',
     }],
-    #'ffmpeg_location': os.getenv("FFMPEG_PATH", "C:\\ffmpeg\\bin"),
     }
 
     try:
