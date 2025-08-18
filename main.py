@@ -15,7 +15,10 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 from dotenv import load_dotenv
 load_dotenv()
-BOT_TOKEN = os.getenv('BOT_TOKEN')
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+if not BOT_TOKEN:
+    raise ValueError("BOT_TOKEN не задан! Переменная окружения не видна.")
+print("BOT_TOKEN:", BOT_TOKEN[:5] + "...")  # для проверки, не выводя полностью токен
 
 # Логування
 logging.basicConfig(level=logging.INFO)
