@@ -17,8 +17,7 @@ from dotenv import load_dotenv
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 if not BOT_TOKEN:
-    raise ValueError("BOT_TOKEN не задан! Переменная окружения не видна.")
-print("BOT_TOKEN:", BOT_TOKEN[:5] + "...")  # для проверки, не выводя полностью токен
+    raise ValueError("BOT_TOKEN не задано!")
 
 # Логування
 logging.basicConfig(level=logging.INFO)
@@ -98,7 +97,7 @@ async def handle_search_request(message: types.Message, state: FSMContext):
         'preferredcodec': 'mp3',
         'preferredquality': '192',
     }],
-    'ffmpeg_location': os.getenv("FFMPEG_PATH", "C:\\ffmpeg\\bin"),
+    #'ffmpeg_location': os.getenv("FFMPEG_PATH", "C:\\ffmpeg\\bin"),
     }
 
     try:
