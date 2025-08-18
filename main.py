@@ -13,7 +13,7 @@ from aiogram.types import FSInputFile, BotCommand, InlineKeyboardMarkup, InlineK
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from app.config import BOT_TOKEN
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # Логування
 logging.basicConfig(level=logging.INFO)
