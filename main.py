@@ -97,6 +97,7 @@ async def handle_search_request(message: types.Message, state: FSMContext):
         'preferredcodec': 'mp3',
         'preferredquality': '192',
     }],
+    'cookiefile': 'cookies.txt',
     }
 
     try:
@@ -220,6 +221,7 @@ async def process_callback(callback: CallbackQuery, callback_data: SongCallbackD
                     'preferredquality': '192',
                 }],
                 'ffmpeg_location': os.getenv("FFMPEG_PATH", "ffmpeg"),
+                'cookiefile': 'cookies.txt',
             }
 
             try:
