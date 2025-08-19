@@ -16,8 +16,10 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-if not BOT_TOKEN:
-    raise ValueError("BOT_TOKEN не задано!")
+
+
+import shutil
+print("ffmpeg found at:", shutil.which("ffmpeg"))
 
 # Логування
 logging.basicConfig(level=logging.INFO)
