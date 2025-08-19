@@ -19,7 +19,9 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 
 import shutil
-print("ffmpeg found at:", shutil.which("ffmpeg"))
+ffmpeg_path = shutil.which("ffmpeg")
+if not ffmpeg_path:
+    raise RuntimeError("FFmpeg не найден! Проверь установку.")
 
 # Логування
 logging.basicConfig(level=logging.INFO)
@@ -99,7 +101,7 @@ async def handle_search_request(message: types.Message, state: FSMContext):
         'preferredcodec': 'mp3',
         'preferredquality': '192',
     }],
-    'ffmpeg_location': '/nix/store/xxxxxx-ffmpeg-6.0/bin/ffmpeg',
+    'ffmpeg_location': ffmpeg_path,
     'cookiefile': 'cookies.txt',
     }
 
@@ -223,7 +225,7 @@ async def process_callback(callback: CallbackQuery, callback_data: SongCallbackD
                     'preferredcodec': 'mp3',
                     'preferredquality': '192',
                 }],
-                'ffmpeg_location': '/nix/store/xxxxxx-ffmpeg-6.0/bin/ffmpeg',
+                'ffmpeg_location': ffmpeg_path,
                 'cookiefile': 'cookies.txt',
             }
 
