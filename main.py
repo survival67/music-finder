@@ -101,7 +101,8 @@ async def handle_search_request(message: types.Message, state: FSMContext):
     }],
     'ffmpeg_location': ffmpeg_path,
     'cookiefile': 'cookies.txt',
-    }
+    'ignoreerrors': True,   # <-- важно, чтобы не падал на ошибках
+}
 
     try:
         def perform_search():
@@ -215,16 +216,17 @@ async def process_callback(callback: CallbackQuery, callback_data: SongCallbackD
 
             ydl_opts = {
                 'format': 'bestaudio/best',
-                'noplaylist': True,
-                'quiet': True,
-                'outtmpl': os.path.join(tempfile.gettempdir(), '%(title)s.%(ext)s'),
-                'postprocessors': [{
+                 'noplaylist': True,
+                 'quiet': True,
+                 'outtmpl': os.path.join(tempfile.gettempdir(), '%(title)s.%(ext)s'),
+                    'postprocessors': [{
                     'key': 'FFmpegExtractAudio',
                     'preferredcodec': 'mp3',
                     'preferredquality': '192',
-                }],
+                  }],
                 'ffmpeg_location': ffmpeg_path,
                 'cookiefile': 'cookies.txt',
+                'ignoreerrors': True,   # <-- важно, чтобы не падал на ошибках
             }
 
             try:
