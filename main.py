@@ -18,10 +18,8 @@ load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 
-import shutil
-ffmpeg_path = shutil.which("ffmpeg")
-if not ffmpeg_path:
-    raise RuntimeError("FFmpeg не найден! Проверь установку.")
+import imageio_ffmpeg as ffmpeg
+ffmpeg_path = ffmpeg.get_ffmpeg_exe()
 
 # Логування
 logging.basicConfig(level=logging.INFO)
