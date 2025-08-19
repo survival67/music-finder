@@ -97,7 +97,7 @@ async def handle_search_request(message: types.Message, state: FSMContext):
         'preferredcodec': 'mp3',
         'preferredquality': '192',
     }],
-    'ffmpeg_location': '/usr/bin/ffmpeg',
+    'ffmpeg_location': '/nix/store/xxxxxx-ffmpeg-6.0/bin/ffmpeg',
     'cookiefile': 'cookies.txt',
     }
 
@@ -221,7 +221,7 @@ async def process_callback(callback: CallbackQuery, callback_data: SongCallbackD
                     'preferredcodec': 'mp3',
                     'preferredquality': '192',
                 }],
-                'ffmpeg_location': '/usr/bin/ffmpeg',
+                'ffmpeg_location': '/nix/store/xxxxxx-ffmpeg-6.0/bin/ffmpeg',
                 'cookiefile': 'cookies.txt',
             }
 
