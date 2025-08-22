@@ -17,31 +17,30 @@ from dotenv import load_dotenv
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
+import imageio_ffmpeg as ffmpeg
+ffmpeg_path = ffmpeg.get_ffmpeg_exe()
 
-#import imageio_ffmpeg as ffmpeg
-#ffmpeg_path = ffmpeg.get_ffmpeg_exe()
-
-# Логування
+# Логирование
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Ініціалізація бота та диспетчера
+# Инициализация бота и диспетчера
 bot = Bot(token=BOT_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 router = Router()
 
-# Стани FSM
+# FSM стейт
 class SearchState(StatesGroup):
     waiting_for_query = State()
 
-# CallbackData модель
+# CallbackData
 class SongCallbackData(CallbackData, prefix="song"):
-    action: str   
-    index: int    
-    page: int    
+    action: str
+    index: int
+    page: int
 
-# Команди в боті
+# Команды
 async def set_bot_commands(bot: Bot):
     commands = [
         BotCommand(command="start", description="Запустити бота"),
@@ -49,11 +48,10 @@ async def set_bot_commands(bot: Bot):
     ]
     await bot.set_my_commands(commands)
 
-# Команди та повідомлення в боті
 @router.message(Command("start"))
 async def start_handler(message: types.Message):
     await message.answer(
-        "Привіт! Я бот для пошуку музики \U0001F3B6\n"
+        "Привіт! Я бот для пошуку музики 🎶\n"
         "Використовуй команду /search для пошуку пісень або виконавців.\n"
     )
 
@@ -65,10 +63,10 @@ async def help_handler(message: types.Message):
         "/search - Пошук пісні або виконавця\n"
     )
 
-# Команда пошуку
+# Поиск
 @router.message(Command("search"))
 async def search_handler(message: types.Message, state: FSMContext):
-    await message.answer("\U0001F3B5 Введіть назву пісні або ім'я виконавця:")
+    await message.answer("🎵 Введіть назву пісні або ім'я виконавця:")
     await state.set_state(SearchState.waiting_for_query)
 
 def format_duration(duration: float) -> str:
@@ -81,44 +79,43 @@ def format_duration(duration: float) -> str:
 @router.message(SearchState.waiting_for_query)
 async def handle_search_request(message: types.Message, state: FSMContext):
     query = message.text.strip()
-    await message.answer("\U0001F50D Шукаю...")
+    await message.answer("🔎 Шукаю...")
 
     is_artist_search = (
         not any(word in query.lower() for word in ["песня", "пісня", "song", "трек", "track"]) and
         len(query.split()) < 4
     )
 
-    # логіка для пошуку 
     ydl_opts = {
-    'format': 'bestaudio/best',
-    'noplaylist': True,
-    'quiet': True,
-    'outtmpl': os.path.join(tempfile.gettempdir(), '%(title)s.%(ext)s'),
-    'postprocessors': [{
-        'key': 'FFmpegExtractAudio',
-        'preferredcodec': 'mp3',
-        'preferredquality': '192',
-    }],
-    'ffmpeg_location': 'ffmpeg',
-    'cookiefile': 'cookies.txt',
-    'ignoreerrors': True,   # <-- важно, чтобы не падал на ошибках
-}
+        'format': 'bestaudio/best',
+        'noplaylist': True,
+        'quiet': True,
+        'outtmpl': os.path.join(tempfile.gettempdir(), '%(title)s.%(ext)s'),
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+        'ffmpeg_location': ffmpeg_path,
+        'cookiefile': 'cookies.txt',
+        'ignoreerrors': True,
+    }
 
     try:
         def perform_search():
             with YoutubeDL(ydl_opts) as ydl:
                 search_query = f"{query} songs" if is_artist_search else query
-                info = ydl.extract_info(f"ytsearch20:{search_query}", download=False) # пошук n результатів пісень
+                info = ydl.extract_info(f"ytsearch20:{search_query}", download=False)
                 return info.get('entries', [info]) if info else []
 
         results = await asyncio.to_thread(perform_search)
 
         filtered_results = [
             r for r in results if r and not any(
-                x in r.get('title', '').lower() for x in 
+                x in r.get('title', '').lower() for x in
                 ["live", "cover", "interview", "reaction", "album", "lyrics"]
             )
-        ][:20] # обмеження до n результатів
+        ][:20]
 
         if not filtered_results:
             await message.answer("❌ Нічого не знайдено.")
@@ -151,7 +148,6 @@ async def send_page(chat_id: int, page: int, results: List[Dict[str, Any]], is_a
             )
         ])
 
-    # Додавання кнопок навігації
     nav_buttons = []
     if page > 0:
         nav_buttons.append(
@@ -176,12 +172,12 @@ async def send_page(chat_id: int, page: int, results: List[Dict[str, Any]], is_a
     page_title = "Пісні виконавця" if is_artist_search else "Результати пошуку"
     text = f"{page_title} (стор. {page + 1} з {((len(results) - 1) // 5) + 1}):"
 
-    if message: 
+    if message:
         await message.edit_text(text, reply_markup=keyboard)
-    else:  
+    else:
         await bot.send_message(chat_id, text, reply_markup=keyboard)
 
-
+# Обработка кнопок
 @router.callback_query(SongCallbackData.filter())
 async def process_callback(callback: CallbackQuery, callback_data: SongCallbackData, state: FSMContext):
     data = await state.get_data()
@@ -192,7 +188,6 @@ async def process_callback(callback: CallbackQuery, callback_data: SongCallbackD
         len(query.split()) < 4
     )
 
-    # пагінация
     if callback_data.action in ["next", "prev"]:
         await state.update_data(page=callback_data.page)
         await send_page(
@@ -200,12 +195,11 @@ async def process_callback(callback: CallbackQuery, callback_data: SongCallbackD
             page=callback_data.page,
             results=results,
             is_artist_search=is_artist_search,
-            message=callback.message  
+            message=callback.message
         )
         await callback.answer()
         return
 
-    # завантежння файлу
     if callback_data.action == "download":
         if 0 <= callback_data.index < len(results):
             video = results[callback_data.index]
@@ -216,17 +210,17 @@ async def process_callback(callback: CallbackQuery, callback_data: SongCallbackD
 
             ydl_opts = {
                 'format': 'bestaudio/best',
-                 'noplaylist': True,
-                 'quiet': True,
-                 'outtmpl': os.path.join(tempfile.gettempdir(), '%(title)s.%(ext)s'),
-                    'postprocessors': [{
+                'noplaylist': True,
+                'quiet': True,
+                'outtmpl': os.path.join(tempfile.gettempdir(), '%(title)s.%(ext)s'),
+                'postprocessors': [{
                     'key': 'FFmpegExtractAudio',
                     'preferredcodec': 'mp3',
                     'preferredquality': '192',
-                  }],
-                'ffmpeg_location': 'ffmpeg',
+                }],
+                'ffmpeg_location': ffmpeg_path,
                 'cookiefile': 'cookies.txt',
-                'ignoreerrors': True,   # <-- важно, чтобы не падал на ошибках
+                'ignoreerrors': True,
             }
 
             try:
@@ -234,12 +228,15 @@ async def process_callback(callback: CallbackQuery, callback_data: SongCallbackD
                     with YoutubeDL(ydl_opts) as ydl:
                         info = ydl.extract_info(video_url, download=True)
                         filename = ydl.prepare_filename(info)
-                        filename = filename.replace(".webm", ".mp3").replace(".m4a", ".mp3")
+                        # Жестко меняем расширение на .mp3
+                        filename = os.path.splitext(filename)[0] + ".mp3"
                         return filename, info.get('title', 'audio')
 
                 filename, title = await asyncio.to_thread(download_audio)
+
                 audio_file = FSInputFile(path=filename, filename=os.path.basename(filename))
-                await callback.message.answer_audio(audio_file, title=title[:64])
+                # именно файл — через document
+                await callback.message.answer_document(audio_file, caption=title[:64])
                 os.remove(filename)
 
             except Exception as e:
