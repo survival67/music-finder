@@ -18,8 +18,8 @@ load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 
-import imageio_ffmpeg as ffmpeg
-ffmpeg_path = ffmpeg.get_ffmpeg_exe()
+#import imageio_ffmpeg as ffmpeg
+#ffmpeg_path = ffmpeg.get_ffmpeg_exe()
 
 # Логування
 logging.basicConfig(level=logging.INFO)
