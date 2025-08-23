@@ -96,12 +96,21 @@ async def handle_search_request(message: types.Message, state: FSMContext):
         "preferredcodec": "mp3",
         "preferredquality": "192",
     }],
-    "cookiefile": "cookies.txt", 
+    "cookiefile": "cookies.txt",
     "ignoreerrors": True,
+    "extractor_retries": 3,
+    "retries": 3,
+    "fragment_retries": 3,
+    "skip_unavailable_fragments": True,
     "http_headers": {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                    "Accept-Language": "en-US,en;q=0.9",
-                }
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Accept-Encoding": "gzip, deflate",
+        "DNT": "1",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+    }
 }
 
     try:
@@ -220,13 +229,21 @@ async def process_callback(callback: CallbackQuery, callback_data: SongCallbackD
                     "key": "FFmpegExtractAudio",
                     "preferredcodec": "mp3",
                     "preferredquality": "192",
-                }],
-                "cookiefile": "cookies.txt",  
+                 }],
+                "cookiefile": "cookies.txt",
                 "ignoreerrors": True,
                 "extractor_retries": 3,
+                "retries": 3,
+                "fragment_retries": 3,
+                "skip_unavailable_fragments": True,
                 "http_headers": {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                    "Accept-Language": "en-US,en;q=0.9",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": "en-US,en;q=0.5",
+                    "Accept-Encoding": "gzip, deflate",
+                    "DNT": "1",
+                    "Connection": "keep-alive",
+                    "Upgrade-Insecure-Requests": "1",
                 }
             }
 
@@ -241,10 +258,18 @@ async def process_callback(callback: CallbackQuery, callback_data: SongCallbackD
 
                 filename, title = await asyncio.to_thread(download_audio)
 
+                if not os.path.exists(filename) or os.path.getsize(filename) == 0:
+                    await callback.message.answer("⚠️ Помилка: файл не знайдено або він пустий.")
+                    return
+
                 audio_file = FSInputFile(path=filename, filename=os.path.basename(filename))
-                # именно файл — через document
-                await callback.message.answer_document(audio_file, caption=title[:64])
-                os.remove(filename)
+
+                try:
+                    await callback.message.answer_document(audio_file, caption=title[:64])
+                finally:
+                    # Видаляємо файл після відправки
+                    if os.path.exists(filename):
+                        os.remove(filename)
 
             except Exception as e:
                 logger.error(f"Download error: {e}", exc_info=True)
