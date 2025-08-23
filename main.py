@@ -252,9 +252,8 @@ async def process_callback(callback: CallbackQuery, callback_data: SongCallbackD
                     with YoutubeDL(ydl_opts) as ydl:
                         info = ydl.extract_info(video_url, download=True)
                         filename = ydl.prepare_filename(info)
-                        # Жестко меняем расширение на .mp3
                         filename = os.path.splitext(filename)[0] + ".mp3"
-                        return filename, info.get('title', 'audio')
+                        return filename
 
                 filename, title = await asyncio.to_thread(download_audio)
 
