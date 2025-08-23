@@ -96,9 +96,9 @@ async def handle_search_request(message: types.Message, state: FSMContext):
         "preferredcodec": "mp3",
         "preferredquality": "192",
     }],
-    "cookiefile": "cookies.txt",  # важно, если есть cookies
+    #"cookiefile": "cookies.txt",  # важно, если есть cookies
     "ignoreerrors": True,
-    "allow_unplayable_formats": True,
+    #"allow_unplayable_formats": True,
     "extractor_args": {"youtube": {"player_client": "web_embedded"}},
 }
 
@@ -219,9 +219,9 @@ async def process_callback(callback: CallbackQuery, callback_data: SongCallbackD
                     "preferredcodec": "mp3",
                     "preferredquality": "192",
                 }],
-                "cookiefile": "cookies.txt",  
+                #"cookiefile": "cookies.txt",  
                 "ignoreerrors": True,
-                "allow_unplayable_formats": True,
+                #"allow_unplayable_formats": True,
                 "extractor_args": {"youtube": {"player_client": "web_embedded"}},
             }
 
