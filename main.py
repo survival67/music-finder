@@ -96,10 +96,12 @@ async def handle_search_request(message: types.Message, state: FSMContext):
         "preferredcodec": "mp3",
         "preferredquality": "192",
     }],
-    #"cookiefile": "cookies.txt",  # важно, если есть cookies
+    "cookiefile": "cookies.txt", 
     "ignoreerrors": True,
-    #"allow_unplayable_formats": True,
-    "extractor_args": {"youtube": {"player_client": "web_embedded"}},
+    "http_headers": {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                    "Accept-Language": "en-US,en;q=0.9",
+                }
 }
 
     try:
@@ -219,10 +221,13 @@ async def process_callback(callback: CallbackQuery, callback_data: SongCallbackD
                     "preferredcodec": "mp3",
                     "preferredquality": "192",
                 }],
-                #"cookiefile": "cookies.txt",  
+                "cookiefile": "cookies.txt",  
                 "ignoreerrors": True,
-                #"allow_unplayable_formats": True,
-                "extractor_args": {"youtube": {"player_client": "web_embedded"}},
+                "extractor_retries": 3,
+                "http_headers": {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                    "Accept-Language": "en-US,en;q=0.9",
+                }
             }
 
             try:
