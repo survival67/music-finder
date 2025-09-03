@@ -20,11 +20,11 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 import imageio_ffmpeg as ffmpeg
 ffmpeg_path = ffmpeg.get_ffmpeg_exe()
 
-# Логирование
+# Логування
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Инициализация бота и диспетчера
+# Ініціалізація бота
 bot = Bot(token=BOT_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
@@ -40,7 +40,7 @@ class SongCallbackData(CallbackData, prefix="song"):
     index: int
     page: int
 
-# Команды
+# Команди
 async def set_bot_commands(bot: Bot):
     commands = [
         BotCommand(command="start", description="Запустити бота"),
@@ -63,7 +63,7 @@ async def help_handler(message: types.Message):
         "/search - Пошук пісні або виконавця\n"
     )
 
-# Поиск
+# Пошук
 @router.message(Command("search"))
 async def search_handler(message: types.Message, state: FSMContext):
     await message.answer("🎵 Введіть назву пісні або ім'я виконавця:")
@@ -189,7 +189,7 @@ async def send_page(chat_id: int, page: int, results: List[Dict[str, Any]], is_a
     else:
         await bot.send_message(chat_id, text, reply_markup=keyboard)
 
-# Обработка кнопок
+# Обробка кнопок
 @router.callback_query(SongCallbackData.filter())
 async def process_callback(callback: CallbackQuery, callback_data: SongCallbackData, state: FSMContext):
     data = await state.get_data()
@@ -200,7 +200,7 @@ async def process_callback(callback: CallbackQuery, callback_data: SongCallbackD
         len(query.split()) < 4
     )
 
-    # пагінация
+    # пагінація
     if callback_data.action in ["next", "prev"]:
         await state.update_data(page=callback_data.page)
         await send_page(
