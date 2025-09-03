@@ -27,8 +27,9 @@ git clone https://github.com/survival67/music-finder-bot.git
 
 cd music-finder-bot
 
-```
 Встановіть залежності:
+
+```
 
 pip install -r requirements.txt
 
