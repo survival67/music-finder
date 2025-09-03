@@ -23,9 +23,14 @@
 git clone https://github.com/survival67/music-finder-bot.git
 
 ```
+
 Далі перейдіть в директорію проєкта:
 
+```
+
 cd music-finder-bot
+
+```
 
 Встановіть залежності:
 
