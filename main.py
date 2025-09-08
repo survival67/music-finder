@@ -192,6 +192,7 @@ async def send_page(chat_id: int, page: int, results: List[Dict[str, Any]], is_a
 # Обробка кнопок
 @router.callback_query(SongCallbackData.filter())
 async def process_callback(callback: CallbackQuery, callback_data: SongCallbackData, state: FSMContext):
+    await callback.answer("⏳ Обробка...")
     data = await state.get_data()
     results = data.get("results", [])
     query = data.get("query", "")
