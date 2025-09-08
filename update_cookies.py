@@ -45,7 +45,6 @@ def update_cookies(first_login=False):
     print("✅ Cookies збережно!")
 
 if __name__ == "__main__":
-    # Проверяем, есть ли куки
     if not os.path.exists(COOKIES_PKL):
         print("⚠️ Файли cookies не знайдено. Відкрийте браузер та увійдіть.")
         update_cookies(first_login=True)
